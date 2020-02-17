@@ -13,11 +13,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author G10-DEV10W3
  */
+@Repository
 public class PostDatabaseDao implements PostDao {
 
     private final JdbcTemplate jdbcTemplate;
@@ -29,17 +32,24 @@ public class PostDatabaseDao implements PostDao {
 
     @Override
     public List<Post> findByUserId(int userId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        final String sql = "SELECT postId, userId, postMessage, postTime FROM Post WHERE PostId = ?;";
+        return jdbcTemplate.query(sql, new PostMapper(), userId);
     }
 
+    @Transactional
     @Override
     public Post insert(Post post) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String sql = "INSERT INTO post (postMessage) VALUES (?);";
+        jdbcTemplate.update(sql, post.getPostMessage());
+        int newId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
+        post.setPostId(newId);
+        return post;
     }
 
     @Override
     public List<Post> findByPostId(int postId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        final String sql = "SELECT postId, userId, postMessage, postTime FROM Post WHERE PostId = ?;";
+        return jdbcTemplate.query(sql, new PostMapper(), postId);
     }
 
     private static final class PostMapper implements RowMapper<Post> {
@@ -47,12 +57,12 @@ public class PostDatabaseDao implements PostDao {
         @Override
         public Post mapRow(ResultSet rs, int index) throws SQLException {
 
-            LocalDateTime timestamp = rs.getTimestamp("PostTime").toLocalDateTime();
+            LocalDateTime timestamp = rs.getTimestamp("postTime").toLocalDateTime();
 
             Post p = new Post();
             p.setPostId(rs.getInt("postId"));
             p.setUserId(rs.getInt("userId"));
-            p.setPost(rs.getString("post"));
+            p.setPostMessage(rs.getString("postMessage"));
             p.setTimestamp(timestamp);
 
             return p;

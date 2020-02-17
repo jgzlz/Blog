@@ -15,7 +15,7 @@ public class Post {
 
     private int postId;
     private int userId;
-    private String post;
+    private String postMessage;
     private LocalDateTime timestamp = LocalDateTime.now();
 
     public int getPostId() {
@@ -34,12 +34,12 @@ public class Post {
         this.userId = userId;
     }
 
-    public String getPost() {
-        return post;
+    public String getPostMessage() {
+        return postMessage;
     }
 
-    public void setPost(String post) {
-        this.post = post;
+    public void setPostMessage(String postMessage) {
+        this.postMessage = postMessage;
     }
 
     public LocalDateTime getTimestamp() {
@@ -57,7 +57,7 @@ public class Post {
     public Post(int postId, int userId, String post, LocalDateTime timestamp) {
         this.postId = postId;
         this.userId = userId;
-        this.post = post;
+        this.postMessage = postMessage;
         this.timestamp = timestamp;
     }
 
